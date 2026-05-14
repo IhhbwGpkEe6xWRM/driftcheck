@@ -1,35 +1,40 @@
 package drift
 
-// DriftKind classifies the type of drift detected for a resource.
+// DriftKind describes the category of drift detected for a resource or attribute.
 type DriftKind string
 
 const (
-	// KindMissing indicates the resource exists in Terraform state but not in the cloud.
-	KindMissing DriftKind = "missing"
-	// KindChanged indicates the resource exists in both but attributes differ.
-	KindChanged DriftKind = "changed"
-	// KindExtra indicates the resource exists in the cloud but not in Terraform state.
-	KindExtra DriftKind = "extra"
+	// DriftKindMissing indicates the resource exists in Terraform state but
+	// was not found in the live cloud environment.
+	DriftKindMissing DriftKind = "missing"
+
+	// DriftKindChanged indicates one or more attributes differ between the
+	// Terraform state and the live cloud resource.
+	DriftKindChanged DriftKind = "changed"
+
+	// DriftKindExtra indicates a resource exists in the cloud but is not
+	// tracked in Terraform state.
+	DriftKindExtra DriftKind = "extra"
 )
 
-// AttributeDiff records the expected vs actual value for a single attribute.
-type AttributeDiff struct {
-	Attribute string
-	Expected  interface{}
-	Actual    interface{}
-}
-
-// DriftResult represents a single drift finding for a resource.
+// DriftResult captures a single unit of detected drift.
 type DriftResult struct {
-	// ResourceKey is "resource_type.resource_name", e.g. "aws_instance.web".
-	ResourceKey string
-	// Kind classifies the nature of the drift.
-	Kind DriftKind
-	// Diffs holds per-attribute differences; only populated for KindChanged.
-	Diffs []AttributeDiff
-}
+	// ResourceKey is the fully qualified Terraform resource address,
+	// e.g. "aws_instance.web".
+	ResourceKey string `json:"resource_key"`
 
-// HasDiffs returns true when the result contains attribute-level differences.
-func (r DriftResult) HasDiffs() bool {
-	return len(r.Diffs) > 0
+	// ResourceType is the Terraform resource type, e.g. "aws_instance".
+	ResourceType string `json:"resource_type"`
+
+	// Kind describes the category of drift.
+	Kind DriftKind `json:"kind"`
+
+	// Attribute is the specific attribute that drifted (empty for missing/extra).
+	Attribute string `json:"attribute,omitempty"`
+
+	// StateValue is the value recorded in Terraform state.
+	StateValue interface{} `json:"state_value,omitempty"`
+
+	// LiveValue is the value observed in the live cloud resource.
+	LiveValue interface{} `json:"live_value,omitempty"`
 }
