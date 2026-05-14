@@ -1,0 +1,33 @@
+# driftcheck configuration file
+
+# Path to the Terraform state file to inspect.
+statefile: terraform.tfstate
+
+# AWS region to query when fetching live resource attributes.
+region: us-east-1
+
+# AWS named profile (optional; omit to use the default credential chain).
+# profile: my-profile
+
+# Ignore rules suppress specific resource/attribute combinations from drift reports.
+# Use "*" as a wildcard for resource keys or attribute names.
+ignore:
+  # Ignore tag drift on all resources (tags change frequently and may be managed outside Terraform)
+  - resource: "*"
+    attribute: tags
+
+  # Ignore all attributes on a specific transient resource
+  - resource: aws_instance.bastion
+    attribute: "*"
+
+  # Ignore a single volatile attribute on a specific resource
+  - resource: aws_s3_bucket.assets
+    attribute: last_modified
+
+# Output controls how the drift report is written.
+output:
+  # format: "text" (default, human-readable) or "json" (machine-readable)
+  format: text
+
+  # file: path to write the report; omit or leave empty to print to stdout
+  # file: drift-report.json
