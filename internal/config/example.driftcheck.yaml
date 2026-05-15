@@ -31,3 +31,8 @@ output:
 
   # file: path to write the report; omit or leave empty to print to stdout
   # file: drift-report.json
+
+# Timeout (in seconds) for AWS API calls when fetching live resource attributes.
+# Increase this value in environments with slow or rate-limited API responses.
+# Default: 30
+# timeout: 30
