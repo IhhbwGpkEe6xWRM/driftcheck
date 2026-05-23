@@ -36,3 +36,9 @@ output:
 # Increase this value in environments with slow or rate-limited API responses.
 # Default: 30
 # timeout: 30
+
+# Concurrency controls how many AWS API calls are made in parallel when
+# fetching live resource attributes. Higher values speed up checks against
+# large state files but may trigger API rate limits.
+# Must be a positive integer. Default: 4
+# concurrency: 4
